@@ -303,6 +303,52 @@ static AFHTTPSessionManager *_sessionManager;
     return downloadTask;
 }
 
+#pragma mark ---PUT---
++ (NSURLSessionTask *)PUT:(NSString *)URL
+               parameters:(id)parameters
+            responseCache:(PPHttpRequestCache)responseCache
+                  success:(PPHttpRequestSuccess)success
+                  failure:(PPHttpRequestFailed)failure {
+        //读取缓存
+    responseCache!=nil ? responseCache([PPNetworkCache httpCacheForURL:URL parameters:parameters]) : nil;
+    NSURLSessionTask *sessionTask = [_sessionManager PUT:URL parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (_isOpenLog) {PPLog(@"responseObject = %@",responseObject);}
+        [[self allSessionTask] removeObject:task];
+        success ? success(responseObject) : nil;
+            //对数据进行异步缓存
+        responseCache!=nil ? [PPNetworkCache setHttpCache:responseObject URL:URL parameters:parameters] : nil;
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (_isOpenLog) {PPLog(@"error = %@",error);}
+        [[self allSessionTask] removeObject:task];
+        failure ? failure(error) : nil;
+    }];
+        // 添加最新的sessionTask到数组
+    sessionTask ? [[self allSessionTask] addObject:sessionTask] : nil ;
+    return sessionTask;
+    
+}
+
++ (NSURLSessionTask *)DEL:(NSString *)URL
+               parameters:(id)parameters
+            responseCache:(PPHttpRequestCache)responseCache
+                  success:(PPHttpRequestSuccess)success
+                  failure:(PPHttpRequestFailed)failure {
+    responseCache!=nil ? responseCache([PPNetworkCache httpCacheForURL:URL parameters:parameters]) : nil;
+    NSURLSessionTask *sessionTask = [_sessionManager DELETE:URL parameters:parameters success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (_isOpenLog) {PPLog(@"responseObject = %@",responseObject);}
+        [[self allSessionTask] removeObject:task];
+        success ? success(responseObject) : nil;
+            //对数据进行异步缓存
+        responseCache!=nil ? [PPNetworkCache setHttpCache:responseObject URL:URL parameters:parameters] : nil;
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (_isOpenLog) {PPLog(@"error = %@",error);}
+        [[self allSessionTask] removeObject:task];
+        failure ? failure(error) : nil;
+    }];
+    sessionTask ? [[self allSessionTask] addObject:sessionTask] : nil ;
+    return sessionTask;
+}
+
 /**
  存储着所有的请求task数组
  */

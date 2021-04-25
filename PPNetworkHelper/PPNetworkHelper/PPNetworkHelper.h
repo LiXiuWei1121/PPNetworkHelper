@@ -310,5 +310,17 @@ typedef void(^PPNetworkStatus)(PPNetworkStatusType status);
  */
 + (void)setSecurityPolicyWithCerPath:(NSString *)cerPath validatesDomainName:(BOOL)validatesDomainName;
 
++ (NSURLSessionTask *)PUT:(NSString *)URL
+               parameters:(id)parameters
+            responseCache:(PPHttpRequestCache)responseCache
+                  success:(PPHttpRequestSuccess)success
+                  failure:(PPHttpRequestFailed)failure;
+
++ (NSURLSessionTask *)DEL:(NSString *)URL
+               parameters:(id)parameters
+            responseCache:(PPHttpRequestCache)responseCache
+                  success:(PPHttpRequestSuccess)success
+                  failure:(PPHttpRequestFailed)failure;
+
 @end
 
